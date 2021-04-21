@@ -1,6 +1,7 @@
 package com.example.bencinskecrpalke;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -196,6 +197,15 @@ public class MainActivity extends Activity {
         //doda Listener objekt obema spinnerjema
         ((Spinner)findViewById(R.id.spinnerDistributer)).setOnItemSelectedListener(spinnerOnItemSelectedListener);
         ((Spinner)findViewById(R.id.spinnerVrstaGoriva)).setOnItemSelectedListener(spinnerOnItemSelectedListener);
+
+        //doda listener za odpiranje MapsActivity
+        ((Button)findViewById(R.id.buttonIsci)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                startActivity(new Intent(MainActivity.this, MapsActivity.class));
+            }
+        });
     }
 
     @Override

@@ -42,7 +42,7 @@ public class MapsActivity extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_maps_activity, container, false);
+        return inflater.inflate(R.layout.activity_maps, container, false);
     }
 
     @Override
