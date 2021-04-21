@@ -3,6 +3,7 @@
     <string name="textBoxLokacija">Kraj npr Ljubljana</string>
     <string name="textBoxLokacijaHint">Kraj npr Ljubljana</string>
     <string name="buttonGPS">Uporabi GPS</string>
+    <string name="buttonIsci">Išči</string>
     <string name="VolleyErrorResponse">Napaka pri povezavi. Ali imate dostop do interneta?</string>
     <string-array name="spinnerDistributer"><item>Izberi distributerja</item></string-array>
     <string-array name="spinnerVrstaGoriva"><item>Izberi vrsto goriva</item></string-array>

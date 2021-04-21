@@ -183,4 +183,14 @@
         app:layout_constraintStart_toEndOf="@+id/constraintLayoutOkvir"
         app:layout_constraintTop_toTopOf="@+id/constraintLayoutOkvir" />
 
+    <Button
+        android:id="@+id/buttonIsci"
+        android:layout_width="106dp"
+        android:layout_height="104dp"
+        android:text="@string/buttonIsci"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayoutOkvir"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineLayoutVerticalRight"
+        app:layout_constraintStart_toStartOf="@+id/guidelineLayoutVerticalLeft"
+        app:layout_constraintTop_toTopOf="@+id/imageViewSplash" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
