@@ -46,7 +46,7 @@ import java.util.ArrayList;
  * + https://stackoverflow.com/questions/1337424/android-spinner-get-the-selected-item-change-event
  * */
 
-
+//posebej class samo za GPS???
 
 //public class MainActivity extends AppCompatActivity {
 public class MainActivity extends Activity {
@@ -132,7 +132,7 @@ public class MainActivity extends Activity {
             ArrayList<String> al = savedInstanceState.getStringArrayList("spinnerVrstaGoriva");
             //int idx;
             if (al.size() == 0) pridobiPodatkeZaSpinner(R.id.spinnerVrstaGoriva, URL_GET_GORIVA); //če je spinner prazen, se ga napolni preko spletne poizvedbe
-            else if (al.size() >= 1) //preveri prvi vnos ali je default 'prazen spinner' vnos, ali so dejansko podatki not
+            else //if (al.size() >= 1) //preveri prvi vnos ali je default 'prazen spinner' vnos, ali so dejansko podatki not
             {
                 if (al.get(0).contains(getResources().getStringArray(R.array.spinnerVrstaGoriva)[0])) //primerja, ali je prvi item v listi item <string-array name="spinnerVrstaGoriva"><item>Izberi vrsto goriva</item></string-array>
                     pridobiPodatkeZaSpinner(R.id.spinnerVrstaGoriva, URL_GET_GORIVA); //če je default 'Izberi x', potem še spinner ni bil napolnjen in naredi spletno poizvedbo
@@ -145,7 +145,8 @@ public class MainActivity extends Activity {
 
             al = savedInstanceState.getStringArrayList("spinnerDistributer");
             if (al.size() == 0) pridobiPodatkeZaSpinner(R.id.spinnerDistributer, URL_GET_DISTRIBUTERJI);
-            else if (al.size() >= 1) {
+            else //if (al.size() >= 1)
+            {
                 if (al.get(0).contains(getResources().getStringArray(R.array.spinnerDistributer)[0]))
                     pridobiPodatkeZaSpinner(R.id.spinnerDistributer, URL_GET_DISTRIBUTERJI);
                 else {
@@ -199,13 +200,15 @@ public class MainActivity extends Activity {
         ((Spinner)findViewById(R.id.spinnerVrstaGoriva)).setOnItemSelectedListener(spinnerOnItemSelectedListener);
 
         //doda listener za odpiranje MapsActivity
-        ((Button)findViewById(R.id.buttonIsci)).setOnClickListener(new View.OnClickListener() {
+        (findViewById(R.id.buttonIsci)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
                 startActivity(new Intent(MainActivity.this, MapsActivity.class));
             }
         });
+
+
     }
 
     @Override
@@ -219,6 +222,7 @@ public class MainActivity extends Activity {
 
     private void omogociUI(boolean flag)
     {
+        Button isci = findViewById(R.id.buttonIsci);
         Button uporabiGPS = findViewById(R.id.buttonGPS);
         Button odpriZapriOkvir = findViewById(R.id.buttonOdpriZapriOkvir);
         EditText textBoxLokacija = findViewById(R.id.textBoxLokacija);
@@ -226,6 +230,7 @@ public class MainActivity extends Activity {
         Spinner spinnerVrstaGoriv = findViewById(R.id.spinnerVrstaGoriva);
         ConstraintLayout okvir = findViewById(R.id.constraintLayoutOkvir);
 
+        isci.setEnabled(flag);
         uporabiGPS.setEnabled(flag);
         odpriZapriOkvir.setEnabled(flag);
         textBoxLokacija.setEnabled(flag);
@@ -235,6 +240,7 @@ public class MainActivity extends Activity {
 
         if (flag) //omogoči, prikaže
         {
+            isci.setVisibility(View.VISIBLE);
             uporabiGPS.setVisibility(View.VISIBLE);
             odpriZapriOkvir.setVisibility(View.VISIBLE);
             textBoxLokacija.setVisibility(View.VISIBLE);
@@ -244,6 +250,7 @@ public class MainActivity extends Activity {
         }
         else //onemogoči, skrije
         {
+            isci.setVisibility(View.INVISIBLE);
             uporabiGPS.setVisibility(View.INVISIBLE);
             odpriZapriOkvir.setVisibility(View.INVISIBLE);
             textBoxLokacija.setVisibility(View.INVISIBLE);
@@ -265,8 +272,8 @@ public class MainActivity extends Activity {
                 //Toast.makeText(MainActivity.this, response.toString(), Toast.LENGTH_LONG);
                 SPLETNE_ZAHTEVE_STEVEC--; //zahteva zaključena, števec se dekrementira
 
-                ArrayList<String> list = new ArrayList<String>();
-                list.addAll(JSONArrayNamesToArrayList(response));
+                ArrayList<String> list = new ArrayList<>(JSONArrayNamesToArrayList(response));
+                //list.addAll(JSONArrayNamesToArrayList(response));
 
                 if (spinnerViewID == R.id.spinnerDistributer)
                 {

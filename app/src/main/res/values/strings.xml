@@ -5,7 +5,12 @@
     <string name="buttonGPS">Uporabi GPS</string>
     <string name="buttonIsci">Išči</string>
     <string name="VolleyErrorResponse">Napaka pri povezavi. Ali imate dostop do interneta?</string>
-    <string-array name="spinnerDistributer"><item>Izberi distributerja</item></string-array>
-    <string-array name="spinnerVrstaGoriva"><item>Izberi vrsto goriva</item></string-array>
+    <string-array name="spinnerDistributer">
+        <item>Izberi distributerja</item>
+    </string-array>
+    <string-array name="spinnerVrstaGoriva">
+        <item>Izberi vrsto goriva</item>
+    </string-array>
     <string name="imageViewSplashContentDescription">Splash screen</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
