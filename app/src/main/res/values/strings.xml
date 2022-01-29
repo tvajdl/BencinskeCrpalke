@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BencinskeCrpalke</string>
+    <string name="app_name">Bencinske Crpalke</string>
     <string name="textBoxLokacija">Kraj npr Ljubljana</string>
     <string name="textBoxLokacijaHint">Kraj npr Ljubljana</string>
     <string name="buttonGPS">Uporabi GPS</string>
