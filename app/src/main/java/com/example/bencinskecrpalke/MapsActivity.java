@@ -6,19 +6,14 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
-import android.widget.LinearLayout;
 
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +29,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.navigation.NavigationView;
+
+import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.ArrayList;
 
@@ -106,24 +103,48 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         ArrayList<MenuCardBencinskaCrpalka> menuCardBencinskaCrpalkaArrayList = new ArrayList<>();
         // here we have created new array list and added data to it.
 
-        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka1", "naslov", 1.0, 1.0, R.drawable._1, new LinearLayout(getBaseContext())));
-        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka2", "naslov", 2.0, 2.0, R.drawable._2, new LinearLayout(getBaseContext())));
-        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka3", "naslov", 3.0, 3.0, R.drawable._13, new LinearLayout(getBaseContext())));
-        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka4", "naslov", 4.0, 4.0, R.drawable._25, new LinearLayout(getBaseContext())));
-        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka5", "naslov", 4.0, 4.0, R.drawable._21, new LinearLayout(getBaseContext())));
-        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka6", "naslov", 4.0, 4.0, R.drawable._27, new LinearLayout(getBaseContext())));
-        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka7", "naslov", 4.0, 4.0, R.drawable._9, new LinearLayout(getBaseContext())));
-        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka8", "naslov", 4.0, 4.0, R.drawable._29, new LinearLayout(getBaseContext())));
-        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka9", "naslov", 4.0, 4.0, R.drawable._1, new LinearLayout(getBaseContext())));
+        //layout kateri vsebuje cene goriv za posamezno bencinsko
+        FlowLayout flow = new FlowLayout(getBaseContext());
+        GorivoCell hofer = new GorivoCell(getBaseContext());
+        hofer.setNazivText("95");
+        hofer.setCenaText("1.43");
+        hofer.setNazivTextColor(Color.BLACK);
+        hofer.setCenaTextColor(Color.WHITE);
+        hofer.setNazivBackgroundColor(Color.WHITE);
+        hofer.setCenaBackgroundColor(Color.GREEN);
+
+        GorivoCell hofer2 = new GorivoCell(getBaseContext());
+        hofer2.setNazivText("100");
+        hofer2.setCenaText("1.50");
+        hofer2.setNazivTextColor(Color.BLACK);
+        hofer2.setCenaTextColor(Color.WHITE);
+        hofer2.setNazivBackgroundColor(Color.WHITE);
+        hofer2.setCenaBackgroundColor(Color.GREEN);
+
+        flow.addView(hofer);
+        flow.addView(hofer2);
+
+        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka1", "naslov", 1.0, 1.0, R.drawable._1, flow));
+        /*
+        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka2", "naslov", 2.0, 2.0, R.drawable._13, new FlowLayout(getBaseContext())));
+        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka3", "naslov", 3.0, 3.0, R.drawable._3, new FlowLayout(getBaseContext())));
+        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka4", "naslov", 4.0, 4.0, R.drawable._4, new FlowLayout(getBaseContext())));
+        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka5", "naslov", 4.0, 4.0, R.drawable._21, new FlowLayout(getBaseContext())));
+        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka6", "naslov", 4.0, 4.0, R.drawable._27, new FlowLayout(getBaseContext())));
+        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka7", "naslov", 4.0, 4.0, R.drawable._9, new FlowLayout(getBaseContext())));
+        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka8", "naslov", 4.0, 4.0, R.drawable._29, new FlowLayout(getBaseContext())));
+        menuCardBencinskaCrpalkaArrayList.add(new MenuCardBencinskaCrpalka("crpalka9", "naslov", 4.0, 4.0, R.drawable._2, new FlowLayout(getBaseContext())));
+        */
+
         // we are initializing our adapter class and passing our arraylist to it.
         MenuCardAdapter menuCardAdapter = new MenuCardAdapter(this, menuCardBencinskaCrpalkaArrayList);
 
         // below line is for setting a layout manager for our recycler view.
         // here we are creating vertical list so we will provide orientation as vertical
-        //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         // in below two lines we are setting layoutmanager and adapter to our recycler view.
-        //rv.setLayoutManager(linearLayoutManager);
+        rv.setLayoutManager(linearLayoutManager);
         rv.setAdapter(menuCardAdapter);
 
         // to make the Navigation drawer icon always appear on the action bar

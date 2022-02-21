@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    app:strokeColor="@color/black"
-    app:strokeWidth="1dp">
+    android:layout_marginTop="10dp"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,15 +17,19 @@
 
         <!-- Media -->
         <ImageView
-            android:id="@+id/logo"
-            android:layout_width="100dp"
-            android:layout_height="75dp"
+            android:id="@+id/imageViewLogo"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginTop="10dp"
             android:contentDescription="null"
             android:scaleType="centerInside"
-            android:src="@drawable/_13" />
+            android:src="@drawable/_13"
+            />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_horizontal"
@@ -35,86 +38,40 @@
 
             <!-- Title, secondary and supporting text -->
             <TextView
-                android:id="@+id/naziv"
-                android:layout_width="wrap_content"
+                android:id="@+id/textViewNaziv"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="naziv"
-                android:textAppearance="?attr/textAppearanceHeadline6" />
+                 />
 
             <TextView
-                android:id="@+id/naslov"
-                android:layout_width="wrap_content"
+                android:id="@+id/textviewNaslov"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="6dp"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_6sdp"
                 android:text="naslov"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?android:attr/textColorSecondary" />
 
-            <LinearLayout
-                android:id="@+id/gorivoLayout"
-                android:layout_width="wrap_content"
+                 />
+
+            <org.apmem.tools.layouts.FlowLayout
+                android:id="@+id/flowLayoutGorivo"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:gravity="center"
                 >
 
-                <TableLayout
-                    android:id="@+id/_95"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content">
 
-                    <!-- first row of the table layout-->
-                    <TableRow
-
-                        android:id="@+id/row1"
-
-                        android:layout_height="wrap_content">
-
-                        <!-- first element of the row-->
-                        <TextView
-                            android:id="@+id/_95Ime"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0"
-                            android:background="#b0b0b0"
-                            android:padding="8dp"
-                            android:text="Bencin 95"
-                            android:textColor="#000"
-                            android:textSize="8sp" />
-
-                    </TableRow>
-
-                    <TableRow
-
-                        android:id="@+id/row2"
-
-                        android:layout_height="wrap_content">
-
-                        <TextView
-
-                            android:id="@+id/_95Cena"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0"
-                            android:background="#FF0000"
-                            android:padding="8dp"
-                            android:text="CENA"
-                            android:textColor="#000"
-                            android:textSize="8sp" />
-
-                    </TableRow>
-
-                </TableLayout>
-
-            </LinearLayout>
+            </org.apmem.tools.layouts.FlowLayout>
 
         </LinearLayout>
-
     </LinearLayout>
-
+    <!-- Ločitvena crta na koncu -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
 </com.google.android.material.card.MaterialCardView>

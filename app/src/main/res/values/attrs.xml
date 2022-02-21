@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="GorivoCell">
+        <attr name="nazivGoriva" format="string" />
+        <attr name="nazivGorivaBackgroundColor" format="color" />
+        <attr name="nazivGorivaTextColor" format="color" />
+        <attr name="nazivGorivaTextSize" format="float" />
+        <attr name="cenaGoriva" format="string" />
+        <attr name="cenaGorivaBackgroundColor" format="color" />
+        <attr name="cenaGorivaTextColor" format="color" />
+        <attr name="cenaGorivaTextSize" format="float" />
+    </declare-styleable>
+
+</resources>

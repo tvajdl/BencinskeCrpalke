@@ -1,7 +1,10 @@
 package com.example.bencinskecrpalke;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -24,7 +27,9 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,6 +37,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.CancellationTokenSource;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONArray;
 
@@ -39,6 +49,15 @@ import java.util.ArrayList;
 
 /*
  * TODO
+ *
+ * arrayListDistributer(Naziv ?) shranit IME ga zloadat v spinner
+ * arrayListDistributerID shrani ID, da se potem uporablja, ko se kliče ob kliku na išči (uporabi .indexOf("Naziv") in iz istea indexa dobiš ID)
+ * isti princip uporabiš pri vrsti goriv
+ *
+ * arrayListVrstaGoriva
+ *
+ *uporablji .indexOf da najdeš
+ *
  *
  * class user ali neki, v katerega se shranijo vsi podatki, kadar se orientacija screena spremeni, da se shranjeni podatki nalo&#x17E;ijo nazaj
  *
@@ -57,6 +76,11 @@ public class MainActivity extends Activity {
         ZAPRT,
         SE_ANIMIRA
     }
+
+    private FusedLocationProviderClient fusedLocationClient;
+    private OnSuccessListener onSuccessListener;
+    private double latitude;
+    private double longitude;
 
     private final int SPLASH_DOLZINA = 2500; //kako dolgo prikazuje splash screen preden ga zacne skrivat
     private int SPLETNE_ZAHTEVE_STEVEC = 0; //števec, ki šteje koliko json requestov se trenutno izvaja
@@ -77,8 +101,11 @@ public class MainActivity extends Activity {
 
         savedInstanceState.putBoolean("APLIKACIJA_ZE_AKTIVNA", true);
         savedInstanceState.putSerializable("OKVIR_ANIMACIJA", Seja.stanjeOkvirja);
-        savedInstanceState.putString("textBoxLokacija", Seja.textBoxLokacija);
-/*
+        savedInstanceState.putString("textViewLokacija", Seja.textBoxLokacija);
+
+
+
+        /*
         //shrani stanje spinnerjev
         ArrayList<String> l = pridobiPodatkeIzSpinnerja(findViewById(R.id.spinnerVrstaGoriva));
         String s = "";
@@ -99,7 +126,7 @@ public class MainActivity extends Activity {
         //shrani stanje spinnerjev
         savedInstanceState.putStringArrayList("spinnerVrstaGoriva", Seja.arrayListVrstaGoriva);
         savedInstanceState.putInt("spinnerVrstaGorivaIzbraniItem", Seja.spinnerVrstaGorivaIzbraniItem);
-        savedInstanceState.putStringArrayList("spinnerDistributer",Seja.arrayListDistributer);
+        savedInstanceState.putStringArrayList("spinnerDistributer", Seja.arrayListDistributer);
         savedInstanceState.putInt("spinnerDistributerIzbraniItem", Seja.spinnerDistributerIzbraniItem);
 
         // Always call the superclass so it can save the view hierarchy state
@@ -120,51 +147,50 @@ public class MainActivity extends Activity {
         this.setContentView(R.layout.activity_main);
 
         //preveri, ali je aplikacije ze bila aktivna (ali se je npr samo orientacija zaslona spremenila, da ni potrebno ponovno nalagati podatkov in kazati splash screena)
-        if (savedInstanceState != null)
-        {
+        if (savedInstanceState != null) {
             APLIKACIJA_ZE_AKTIVNA = savedInstanceState.getBoolean("APLIKACIJA_ZE_AKTIVNA");
             Seja.stanjeOkvirja = (StanjeOkvirja) savedInstanceState.getSerializable("OKVIR_ANIMACIJA");
             Seja.spinnerDistributerIzbraniItem = savedInstanceState.getInt("spinnerDistributerIzbraniItem");
             Seja.spinnerVrstaGorivaIzbraniItem = savedInstanceState.getInt("spinnerVrstaGorivaIzbraniItem");
-            Seja.textBoxLokacija = savedInstanceState.getString("textBoxLokacija");
-            ((TextView)findViewById(R.id.textBoxLokacija)).setText(Seja.textBoxLokacija);
+            Seja.textBoxLokacija = savedInstanceState.getString("textViewLokacija");
+            ((TextView) findViewById(R.id.textViewLokacija)).setText(Seja.textBoxLokacija);
 
             ArrayList<String> al = savedInstanceState.getStringArrayList("spinnerVrstaGoriva");
             //int idx;
-            if (al.size() == 0) pridobiPodatkeZaSpinner(R.id.spinnerVrstaGoriva, URL_GET_GORIVA); //če je spinner prazen, se ga napolni preko spletne poizvedbe
+            if (al.size() == 0)
+                pridobiPodatkeZaSpinner(R.id.spinnerVrstaGoriva, URL_GET_GORIVA); //če je spinner prazen, se ga napolni preko spletne poizvedbe
             else //if (al.size() >= 1) //preveri prvi vnos ali je default 'prazen spinner' vnos, ali so dejansko podatki not
             {
                 if (al.get(0).contains(getResources().getStringArray(R.array.spinnerVrstaGoriva)[0])) //primerja, ali je prvi item v listi item <string-array name="spinnerVrstaGoriva"><item>Izberi vrsto goriva</item></string-array>
                     pridobiPodatkeZaSpinner(R.id.spinnerVrstaGoriva, URL_GET_GORIVA); //če je default 'Izberi x', potem še spinner ni bil napolnjen in naredi spletno poizvedbo
                 else {
                     napolniSpinnerSPodatki(R.id.spinnerVrstaGoriva, al); //če vsebuje več vnosov, potem se vnosi samo prekopirajo, brez spletne poizvedbe
-                   // idx = savedInstanceState.getInt("spinnerVrstaGorivaIzbraniItem");
-                   // ((Spinner)findViewById(R.id.spinnerVrstaGoriva)).setSelection(idx, true);
+                    // idx = savedInstanceState.getInt("spinnerVrstaGorivaIzbraniItem");
+                    // ((Spinner)findViewById(R.id.spinnerVrstaGoriva)).setSelection(idx, true);
                 }
             }
 
             al = savedInstanceState.getStringArrayList("spinnerDistributer");
-            if (al.size() == 0) pridobiPodatkeZaSpinner(R.id.spinnerDistributer, URL_GET_DISTRIBUTERJI);
+            if (al.size() == 0)
+                pridobiPodatkeZaSpinner(R.id.spinnerDistributer, URL_GET_DISTRIBUTERJI);
             else //if (al.size() >= 1)
             {
                 if (al.get(0).contains(getResources().getStringArray(R.array.spinnerDistributer)[0]))
                     pridobiPodatkeZaSpinner(R.id.spinnerDistributer, URL_GET_DISTRIBUTERJI);
                 else {
                     napolniSpinnerSPodatki(R.id.spinnerDistributer, al);
-                 //   idx = savedInstanceState.getInt("spinnerDistributerIzbraniItem");
-                //    ((Spinner)findViewById(R.id.spinnerDistributer)).setSelection(idx, true);
+                    //   idx = savedInstanceState.getInt("spinnerDistributerIzbraniItem");
+                    //    ((Spinner)findViewById(R.id.spinnerDistributer)).setSelection(idx, true);
                 }
             }
 
-        }
-        else //hladen zagon, nalozi vse od zacetka
+        } else //hladen zagon, nalozi vse od zacetka
         {
             //zaklene UI, dokler se podatki ne naložijo
             omogociUI(false);
             //postavi splash screen v ospredje
             (findViewById(R.id.imageViewSplash)).bringToFront();
             Seja.stanjeOkvirja = StanjeOkvirja.ZAPRT;
-
 
 
             //napolne spinnerje (dropdowne) s podatki iz spleta
@@ -182,7 +208,7 @@ public class MainActivity extends Activity {
                 //shrani nazadnje izbrano možnost
                 if (parent.getId() == R.id.spinnerDistributer) {
                     Seja.spinnerDistributerIzbraniItem = position;
-                 //   Toast.makeText(MainActivity.this, "pos="+position, Toast.LENGTH_SHORT).show();
+                    //   Toast.makeText(MainActivity.this, "pos="+position, Toast.LENGTH_SHORT).show();
                 } else if (parent.getId() == R.id.spinnerVrstaGoriva) {
                     Seja.spinnerVrstaGorivaIzbraniItem = position;
                     //Toast.makeText(MainActivity.this, "Gorivo", Toast.LENGTH_SHORT).show();
@@ -196,19 +222,169 @@ public class MainActivity extends Activity {
         };
 
         //doda Listener objekt obema spinnerjema
-        ((Spinner)findViewById(R.id.spinnerDistributer)).setOnItemSelectedListener(spinnerOnItemSelectedListener);
-        ((Spinner)findViewById(R.id.spinnerVrstaGoriva)).setOnItemSelectedListener(spinnerOnItemSelectedListener);
+        ((Spinner) findViewById(R.id.spinnerDistributer)).setOnItemSelectedListener(spinnerOnItemSelectedListener);
+        ((Spinner) findViewById(R.id.spinnerVrstaGoriva)).setOnItemSelectedListener(spinnerOnItemSelectedListener);
+
+        //doda listener za iskanje trenutne pozicije gps
+        findViewById(R.id.buttonGPS).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                fusedLocationClient.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+                            latitude = location.getLatitude();
+                            longitude = location.getLongitude();
+
+                            ((TextView)findViewById(R.id.textViewLokacija)).setText(location.getLatitude() + ", " + location.getLongitude());
+                        }
+                    }
+                });
+            }
+        });
 
         //doda listener za odpiranje MapsActivity
         (findViewById(R.id.buttonIsci)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
-                startActivity(new Intent(MainActivity.this, MapsActivity.class));
+                /*
+                * EXAMPLE URL
+                * https://goriva.si/api/v1/search/?franchise=19&o=price_95&position=velenje&format=json
+                * https://goriva.si/api/v1/search/?franchise=19&o=price_95&position=46.0619776%2C14.516224&format=json
+                *
+                * ugotovit more franchise ID iz dropdown ime stringa
+                * ugotovit more bencin ID iz dropdown ime stringa
+                *
+                * */
+
+                if (((TextView)findViewById(R.id.textViewLokacija)).getText() == "")
+                {
+
+                }
+
+                Spinner spinnerDistributer = findViewById(R.id.spinnerDistributer);
+                Spinner spinnerVrstaGoriva = findViewById(R.id.spinnerVrstaGoriva);
+                TextView textViewLokacija = findViewById(R.id.textViewLokacija);
+
+                Seja.arrayListDistributerID.get(spinnerDistributer.getSelectedItemPosition());
+                Seja.arrayListVrstaGorivaID.get(spinnerVrstaGoriva.getSelectedItemPosition());
+
+
+                String URL_GET = new String();
+
+                JsonArrayRequest array_request = new JsonArrayRequest(Request.Method.GET, URL_GET, null, new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.i("Volley onResponse", "URL="+URL_GET);
+                        //Toast.makeText(MainActivity.this, response.toString(), Toast.LENGTH_LONG);
+                        SPLETNE_ZAHTEVE_STEVEC--; //zahteva zaključena, števec se dekrementira
+
+                        //če se še izvajajo spletne zahteve ostane UI zaklenjen
+                        //če pride do napake pri pridobivanju spletne zahteve ostane UI zaklenjen
+                        if (!seIzvajajoSpletneZahteve() && !SPLETNE_ZAHTEVE_NAPAKA)
+                        {
+                            //če je aplikacija že prej bila aktivna se samo UI po polnjenju s podatki nazaj omogoči, drugače se še prej splash screen skrije
+                            if (APLIKACIJA_ZE_AKTIVNA)
+                                omogociUI(true);
+                            else
+                                skrijSplashScreen();
+                        }
+
+                        Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                        intent.putExtra("response", response.toString()); //pošlje rezultat v naslednji activity
+                        //nazaj ga dobiš JSONArray jsonArr = new JSONArray(string);
+                        //V MapsActivity v OnCreate dobiš string ven
+
+                        /*
+                        * Bundle bundle = getIntent().getExtras();
+                            String message = bundle.getString("message");
+                        * */
+                        startActivity(intent);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Volley onErrorResponse", "NAPAKA: " + error.getMessage());
+                        Toast.makeText(MainActivity.this, "Napaka pri povezavi s strežnikom. Poskusite pozneje", Toast.LENGTH_LONG).show();
+                        omogociUI(false); //napaka, UI se zaklene
+                        SPLETNE_ZAHTEVE_STEVEC--; //zahteva zaključena, števec se dekrementira
+                        SPLETNE_ZAHTEVE_NAPAKA = true;
+                        //Toast.makeText(MainActivity.this, R.string.VolleyErrorResponse, Toast.LENGTH_LONG);
+                        //Toast.makeText(MainActivity.this, "se izvaja="+SPLETNE_ZAHTEVE_STEVEC, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                //At a high level, you use Volley by creating a RequestQueue and passing it Request objects.
+                //The RequestQueue manages worker threads for running the network operations, reading from and writing to the cache,
+                //and parsing responses. Requests do the parsing of raw responses and Volley takes care of dispatching the
+                // parsed response back to the main thread for delivery.
+
+                array_request.setTag(R.id.buttonIsci); //označimo request, da se lahko kasneje prekliče, če je potrebno
+                //request, ki se doda v queue
+                queue.add(array_request); //dodajanje requesta v queue
+                SPLETNE_ZAHTEVE_STEVEC++;
+
+                /*
+                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                intent.putExtra("response", response);
+                startActivity(intent);
+                */
+
             }
         });
 
+        //preverjanje pravic
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
 
+            //zahteva po pravicah
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
+
+        //Objekt za iskanje trenutnega locationa
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        //objekt, ki definira kaj se zgodi, ko se uspešno najde lokacija
+        onSuccessListener = new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                // Got last known location. In some rare situations this can be null.
+                if (location != null) {
+                    // Logic to handle location object
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                }
+            }
+        };
+
+        //primer uporabe
+        //fusedLocationClient.getLastLocation().addOnSuccessListener(this, onSuccessListener);
+        fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, new CancellationTokenSource().getToken());
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        if (requestCode == 1) //request code iz ActivityCompat.requestPermissions()
+        {
+            if (!(grantResults.length > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED))
+            {
+                // if permission is not granted
+                //zapre app
+                this.finishAndRemoveTask();
+            }
+        }
     }
 
     @Override
@@ -218,6 +394,7 @@ public class MainActivity extends Activity {
         //prekličemo vse obstoječe spletne Volley requeste
         queue.cancelAll(R.id.spinnerDistributer);
         queue.cancelAll(R.id.spinnerVrstaGoriva);
+        queue.cancelAll(R.id.buttonIsci);
     }
 
     private void omogociUI(boolean flag)
@@ -225,7 +402,7 @@ public class MainActivity extends Activity {
         Button isci = findViewById(R.id.buttonIsci);
         Button uporabiGPS = findViewById(R.id.buttonGPS);
         Button odpriZapriOkvir = findViewById(R.id.buttonOdpriZapriOkvir);
-        EditText textBoxLokacija = findViewById(R.id.textBoxLokacija);
+        EditText textBoxLokacija = findViewById(R.id.textViewLokacija);
         Spinner spinnerIzberiDistributerja = findViewById(R.id.spinnerDistributer);
         Spinner spinnerVrstaGoriv = findViewById(R.id.spinnerVrstaGoriva);
         ConstraintLayout okvir = findViewById(R.id.constraintLayoutOkvir);
@@ -272,24 +449,17 @@ public class MainActivity extends Activity {
                 //Toast.makeText(MainActivity.this, response.toString(), Toast.LENGTH_LONG);
                 SPLETNE_ZAHTEVE_STEVEC--; //zahteva zaključena, števec se dekrementira
 
-                ArrayList<String> list = new ArrayList<>(JSONArrayNamesToArrayList(response));
-                //list.addAll(JSONArrayNamesToArrayList(response));
+                //pridobi podatke iz responsa
+                JSONArrayToArrayList(response, spinnerViewID);
 
                 if (spinnerViewID == R.id.spinnerDistributer)
                 {
-                    list.add(0, "Vsi distributerji"); //doda možnost izbrati vse na prvo mesto
-                    //Seja.arrayListDistributer = list; //doda seznam distributerjev v 'sejo', da se ob ponovni vrnitvi k aplikaciji ni potrebno se enkrat klicat GET funkcije s spleta
+                    napolniSpinnerSPodatki(spinnerViewID, Seja.arrayListDistributer);
                 }
                 else if (spinnerViewID == R.id.spinnerVrstaGoriva)
                 {
-                    list.add(0, "Vsa vrsta goriv");
-                    //Seja.arrayListVrstaGoriva = list;
+                    napolniSpinnerSPodatki(spinnerViewID, Seja.arrayListVrstaGoriva);
                 }
-
-
-
-
-                napolniSpinnerSPodatki(spinnerViewID, list);
 
                 //če se še izvajajo spletne zahteve ostane UI zaklenjen
                 //če pride do napake pri pridobivanju spletne zahteve ostane UI zaklenjen
@@ -327,25 +497,52 @@ public class MainActivity extends Activity {
     }
 
     //ustvari ArrayList iz imen ("name") hranjenih v JSONArrayu
-    private ArrayList<String> JSONArrayNamesToArrayList(JSONArray arr)
+    //iz responsa pobere ven ID in name in shrani v arraylist
+    //uporablja se List v Listu zato, ker java ne podpira Lista v array-u (npr List[2])
+    private void JSONArrayToArrayList(JSONArray arr, int action)
     {
-        ArrayList<String> arrList = new ArrayList<>();
+        ArrayList<ArrayList<String>> arrList = new ArrayList<ArrayList<String>>();
+        arrList.add(new ArrayList<String>()); //name
+        arrList.add(new ArrayList<String>()); //ID
+
         if (arr != null)
         {
             for (int i = 0; i < arr.length(); i++)
             {
                 try
                 {
-                    arrList.add(arr.getJSONObject(i).getString("name"));
+                    arrList.get(0).add(arr.getJSONObject(i).getString("name"));
+                    if (action == R.id.spinnerDistributer)
+                    {
+                        arrList.get(1).add(arr.getJSONObject(i).getString("pk"));
+                    }
+                    else if (action == R.id.spinnerVrstaGoriva)
+                    {
+                        arrList.get(1).add(arr.getJSONObject(i).getString("code"));
+                    }
                 }
                 catch (Exception e)
                 {
                     Log.e("JSONtoArrayList", "Napaka pri polnjenju array liste=" + e.getMessage());
                 }
             }
+
+            arrList.get(1).add(0, ""); //empty ID pomeni vsi distributerji/vsa vrsta goriv, kadar se uporabi v GET
+            if (action == R.id.spinnerDistributer)
+            {
+                arrList.get(0).add(0, "Vsi distributerji"); //doda možnost "izberi vse" na prvo mesto
+                Seja.arrayListDistributer = arrList.get(0); //index 0 name //doda seznam distributerjev v 'sejo', da se ob ponovni vrnitvi k aplikaciji ni potrebno se enkrat klicat GET funkcije s spleta
+                Seja.arrayListDistributerID = arrList.get(1);
+            }
+            else if (action == R.id.spinnerVrstaGoriva)
+            {
+                arrList.get(0).add(0, "Vsa vrsta goriv");
+                Seja.arrayListVrstaGoriva = arrList.get(0);
+                Seja.arrayListVrstaGorivaID = arrList.get(1);
+            }
+
         }
 
-        return arrList;
     }
 
     private void napolniSpinnerSPodatki(int spinnerViewID, ArrayList<String> spinnerItemsList)

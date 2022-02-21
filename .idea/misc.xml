@@ -3,9 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/drawable/gorivo_cell_border.xml" value="0.197" />
+        <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/drawable/gorivo_cell_okvir.xml" value="0.2985" />
+        <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/drawable/okvir.xml" value="0.2985" />
+        <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/layout/activity_main.xml" value="0.1911073108165883" />
         <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/layout/activity_maps.xml" value="0.16725978647686832" />
+        <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/layout/gorivo_cell.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/layout/gorivo_cell_layout.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/layout/gorivo_cell_textview.xml" value="0.18854166666666666" />
         <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/layout/menu_card.xml" value="0.25677083333333334" />
-        <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/layout/menu_card_layout.xml" value="0.14" />
+        <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/layout/menu_card_layout.xml" value="0.2497733454215775" />
         <entry key="..\:/Users/TADEJ/AndroidStudioProjects/BencinskeCrpalke/app/src/main/res/menu/najdene_crpalke_menu.xml" value="0.36666666666666664" />
       </map>
     </option>

@@ -12,6 +12,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.apmem.tools.layouts.FlowLayout;
+
 import java.util.ArrayList;
 
 /*
@@ -47,6 +49,8 @@ public class MenuCardAdapter extends RecyclerView.Adapter<MenuCardAdapter.Viewho
         holder.logo.setImageResource(model.getLogoImageID());
         holder.naslov.setText(model.getNaslov());
         holder.naziv.setText(model.getNaziv());
+        //holder.gorivoLayout = model.getGorivoLayout();
+        holder.gorivoLayout.addView(model.getGorivoLayout());
 //        holder.gorivoLayout = model.getGorivoLayout();
 
         //Toast.makeText(holder.logo.getContext(), holder.naziv.getText(), Toast.LENGTH_SHORT).show();
@@ -67,19 +71,27 @@ public class MenuCardAdapter extends RecyclerView.Adapter<MenuCardAdapter.Viewho
         public View view; //trenutni CardView
         public ImageView logo;
         public TextView naziv, naslov;
-        public LinearLayout gorivoLayout;
+        public FlowLayout gorivoLayout;
 
         public Viewholder(@NonNull View itemView) {
             super(itemView);
 
-            logo = itemView.findViewById(R.id.logo);
-            naziv = itemView.findViewById(R.id.naziv);
-            naslov = itemView.findViewById(R.id.naslov);
-            //gorivoLayout = itemView.findViewById(R.id.gorivoLayout);
+            logo = itemView.findViewById(R.id.imageViewLogo);
+            naziv = itemView.findViewById(R.id.textViewNaziv);
+            naslov = itemView.findViewById(R.id.textviewNaslov);
+            gorivoLayout = itemView.findViewById(R.id.flowLayoutGorivo);
 
             //Toast.makeText(itemView.getContext(), "test", Toast.LENGTH_SHORT).show();
 
             view = itemView;
+
+    //        FlowLayout flowLayout = (FlowLayout)itemView.findViewById(R.id.flowLayoutGoriva);
+    //      for ( int i = 0; i < 2 /*flowLayout.getChildCount()*/;  i++ ){
+    //            View view = flowLayout.getChildAt(i);
+    //            view.setVisibility(View.GONE); //skrije tista goriva, ko jih bencinska ne ponuja
+    //        }
+
+    //        Toast.makeText(itemView.getContext(), Integer.toString(flowLayout.getChildCount()), Toast.LENGTH_LONG).show();
 
             //ViewGroup.LayoutParams par = view.getLayoutParams();
             //LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)view.getLayoutParams();

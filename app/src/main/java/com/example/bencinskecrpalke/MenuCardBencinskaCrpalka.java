@@ -1,12 +1,12 @@
 package com.example.bencinskecrpalke;
 
-import android.widget.LinearLayout;
+import org.apmem.tools.layouts.FlowLayout;
 
 public class MenuCardBencinskaCrpalka {
 
     private String naziv;
     private String naslov;
-    private LinearLayout gorivoLayout;
+    private FlowLayout gorivoLayout;
     private double x;
     private double y;
     private int logoImageID;
@@ -22,7 +22,7 @@ public class MenuCardBencinskaCrpalka {
         logoImageID = R.drawable.no_logo;
     }
 
-    public MenuCardBencinskaCrpalka (String title, String address, double x, double y, int logo, LinearLayout fuelLayout)
+    public MenuCardBencinskaCrpalka (String title, String address, double x, double y, int logo, FlowLayout fuelLayout)
     {
         this.naziv = title;
         this.naslov = address;
@@ -37,7 +37,7 @@ public class MenuCardBencinskaCrpalka {
         return this.naslov;
     }
     public String getNaziv() { return this.naziv; }
-    public LinearLayout getGorivoLayout() { return this.gorivoLayout; }
+    public FlowLayout getGorivoLayout() { return this.gorivoLayout; }
     public double getX()
     {
         return this.x;
@@ -50,7 +50,7 @@ public class MenuCardBencinskaCrpalka {
 
     public void setNaslov(String naslov) { this.naslov = naslov; }
     public void setNaziv(String naziv) { this.naziv = naziv; }
-    public void setGorivoLayout(LinearLayout linearLayout) { this.gorivoLayout = linearLayout; }
+    public void setGorivoLayout(FlowLayout linearLayout) { this.gorivoLayout = linearLayout; }
     public void setX(double x)
     {
         this.x = x;

@@ -11,6 +11,22 @@
     android:layout_height="match_parent"
 
     >
+    <!--google maps-->
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        tools:context=".MapsActivity"  >
+    </fragment>
+
+    <!--Your RecyclerView needs to be listed last within the DrawerLayout to
+    have the correct z-ordering. Currently, it is opening "under" the
+    CoordinatorLayout, which is why you can't manipulate it by touch.
+    Move it to after the CoordinatorLayout.
+    Ce sem imel maps fragment pod NavigationView my scrolling mi deloval
+    -->
 
     <!--this the navigation view which draws
     and shows the navigation drawer-->
@@ -26,38 +42,23 @@
         <!--Container, kjer so cardi (entriji za menu kjer so najdene bencinske) -->
 
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
             >
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_najdene_bencinske_crpalke"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:orientation="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
 
                 />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
 
     </com.google.android.material.navigation.NavigationView>
 
-    <!--google maps-->
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
 
-        tools:context=".MapsActivity"  >
-    </fragment>
 
 </androidx.drawerlayout.widget.DrawerLayout>
