@@ -79,8 +79,8 @@ public class MainActivity extends Activity {
 
     private FusedLocationProviderClient fusedLocationClient;
     private OnSuccessListener onSuccessListener;
-    private double latitude;
-    private double longitude;
+    private double latitude = 0.0;
+    private double longitude = 0.0;
 
     private final int SPLASH_DOLZINA = 2500; //kako dolgo prikazuje splash screen preden ga zacne skrivat
     private int SPLETNE_ZAHTEVE_STEVEC = 0; //števec, ki šteje koliko json requestov se trenutno izvaja
@@ -241,42 +241,48 @@ public class MainActivity extends Activity {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
 
-                            ((TextView)findViewById(R.id.textViewLokacija)).setText(location.getLatitude() + ", " + location.getLongitude());
+                            ((TextView) findViewById(R.id.textViewLokacija)).setText(location.getLatitude() + ", " + location.getLongitude());
                         }
                     }
                 });
             }
         });
 
+
+
+
         //doda listener za odpiranje MapsActivity
         (findViewById(R.id.buttonIsci)).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 /*
-                * EXAMPLE URL
-                * https://goriva.si/api/v1/search/?franchise=19&o=price_95&position=velenje&format=json
-                * https://goriva.si/api/v1/search/?franchise=19&o=price_95&position=46.0619776%2C14.516224&format=json
-                *
-                * ugotovit more franchise ID iz dropdown ime stringa
-                * ugotovit more bencin ID iz dropdown ime stringa
-                *
-                * */
+                 * EXAMPLE URL
+                 * https://goriva.si/api/v1/search/?franchise=19&o=price_95&position=velenje&format=json
+                 * https://goriva.si/api/v1/search/?franchise=19&o=price_95&position=46.0619776%2C14.516224&format=json
+                 *
+                 * ugotovit more franchise ID iz dropdown ime stringa
+                 * ugotovit more bencin ID iz dropdown ime stringa
+                 *
+                 * */
 
+                String currentLokacija;
                 if (((TextView)findViewById(R.id.textViewLokacija)).getText() == "")
                 {
-
+                    currentLokacija = latitude + "," + longitude;
+                }
+                else
+                {
+                    currentLokacija = ((TextView)findViewById(R.id.textViewLokacija)).getText().toString();
                 }
 
                 Spinner spinnerDistributer = findViewById(R.id.spinnerDistributer);
                 Spinner spinnerVrstaGoriva = findViewById(R.id.spinnerVrstaGoriva);
-                TextView textViewLokacija = findViewById(R.id.textViewLokacija);
 
                 Seja.arrayListDistributerID.get(spinnerDistributer.getSelectedItemPosition());
                 Seja.arrayListVrstaGorivaID.get(spinnerVrstaGoriva.getSelectedItemPosition());
 
 
-                String URL_GET = new String();
+                String URL_GET = "";
 
                 JsonArrayRequest array_request = new JsonArrayRequest(Request.Method.GET, URL_GET, null, new Response.Listener<JSONArray>() {
                     @Override
@@ -312,7 +318,6 @@ public class MainActivity extends Activity {
                     public void onErrorResponse(VolleyError error) {
                         Log.e("Volley onErrorResponse", "NAPAKA: " + error.getMessage());
                         Toast.makeText(MainActivity.this, "Napaka pri povezavi s strežnikom. Poskusite pozneje", Toast.LENGTH_LONG).show();
-                        omogociUI(false); //napaka, UI se zaklene
                         SPLETNE_ZAHTEVE_STEVEC--; //zahteva zaključena, števec se dekrementira
                         SPLETNE_ZAHTEVE_NAPAKA = true;
                         //Toast.makeText(MainActivity.this, R.string.VolleyErrorResponse, Toast.LENGTH_LONG);
@@ -341,14 +346,6 @@ public class MainActivity extends Activity {
 
         //preverjanje pravic
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
             //zahteva po pravicah
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
@@ -368,9 +365,11 @@ public class MainActivity extends Activity {
             }
         };
 
-        //primer uporabe
         //fusedLocationClient.getLastLocation().addOnSuccessListener(this, onSuccessListener);
-        fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, new CancellationTokenSource().getToken());
+        //ob zagonu poišče trenutno lokacijo
+        fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, new CancellationTokenSource().getToken()).addOnSuccessListener(this, onSuccessListener);
+
+
     }
 
     @Override
