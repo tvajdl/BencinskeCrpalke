@@ -36,6 +36,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -44,13 +45,15 @@ import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 /*
  * TODO
  *
- * arrayListDistributer(Naziv ?) shranit IME ga zloadat v spinner
+ *
+ * arrayListDistributerNaziv shranit IME ga zloadat v spinner - ker search se dela po private key-u iz APIja in ne imenu
  * arrayListDistributerID shrani ID, da se potem uporablja, ko se kliče ob kliku na išči (uporabi .indexOf("Naziv") in iz istea indexa dobiš ID)
  * isti princip uporabiš pri vrsti goriv
  *
@@ -58,6 +61,7 @@ import java.util.ArrayList;
  *
  *uporablji .indexOf da najdeš
  *
+ * zamenjaj arrayListDistributerNaziv in arrayListDistributerID z hashMap - uporaba ene spremenjlivke namesto dveh
  *
  * class user ali neki, v katerega se shranijo vsi podatki, kadar se orientacija screena spremeni, da se shranjeni podatki nalo&#x17E;ijo nazaj
  *
@@ -124,10 +128,13 @@ public class MainActivity extends Activity {
         savedInstanceState.putStringArrayList("spinnerDistributer", (ArrayList<String>)l);
 */
         //shrani stanje spinnerjev
-        savedInstanceState.putStringArrayList("spinnerVrstaGoriva", Seja.arrayListVrstaGoriva);
+        savedInstanceState.putStringArrayList("spinnerVrstaGoriva", Seja.arrayListVrstaGorivaNaziv);
         savedInstanceState.putInt("spinnerVrstaGorivaIzbraniItem", Seja.spinnerVrstaGorivaIzbraniItem);
-        savedInstanceState.putStringArrayList("spinnerDistributer", Seja.arrayListDistributer);
+        savedInstanceState.putStringArrayList("spinnerDistributer", Seja.arrayListDistributerNaziv);
         savedInstanceState.putInt("spinnerDistributerIzbraniItem", Seja.spinnerDistributerIzbraniItem);
+
+        savedInstanceState.putSerializable("spinnerVrstaGorivaHashMap", Seja.hashMapVrstaGoriva);
+        savedInstanceState.putSerializable("spinnerDistributerji", Seja.hashMapDistributerji);
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
@@ -258,6 +265,9 @@ public class MainActivity extends Activity {
                 /*
                  * EXAMPLE URL
                  * https://goriva.si/api/v1/search/?franchise=19&o=price_95&position=velenje&format=json
+                 *
+                 * https://goriva.si/api/v1/search/?franchise= [PK FRANSIZE] &o=price_ [CODE GORIVA] &position=velenje&format=json
+                 *
                  * https://goriva.si/api/v1/search/?franchise=19&o=price_95&position=46.0619776%2C14.516224&format=json
                  *
                  * ugotovit more franchise ID iz dropdown ime stringa
@@ -281,12 +291,49 @@ public class MainActivity extends Activity {
                 Seja.arrayListDistributerID.get(spinnerDistributer.getSelectedItemPosition());
                 Seja.arrayListVrstaGorivaID.get(spinnerVrstaGoriva.getSelectedItemPosition());
 
+                //Toast.makeText(MainActivity.this, "", Toast.LENGTH_LONG).show();
 
-                String URL_GET = "";
+                //Toast.makeText(MainActivity.this, Seja.arrayListVrstaGorivaID.get(Seja.arrayListVrstaGorivaNaziv.indexOf(spinnerVrstaGoriva.getSelectedItem())), Toast.LENGTH_LONG).show();
+                Seja.arrayListVrstaGorivaNaziv.indexOf(spinnerVrstaGoriva.getSelectedItem());
 
-                JsonArrayRequest array_request = new JsonArrayRequest(Request.Method.GET, URL_GET, null, new Response.Listener<JSONArray>() {
+
+
+                Seja.arrayListVrstaGorivaID.get(Seja.arrayListVrstaGorivaNaziv.indexOf(spinnerVrstaGoriva.getSelectedItem()));
+                Seja.arrayListDistributerID.get(Seja.arrayListDistributerNaziv.indexOf(spinnerDistributer.getSelectedItem()));
+
+                //
+
+                //"https://goriva.si/api/v1/search/?franchise=" + Seja.arrayListDistributerID.get(Seja.arrayListDistributerNaziv.indexOf(spinnerDistributer.getSelectedItem())) + "&o=price_" + Seja.arrayListVrstaGorivaID.get(Seja.arrayListVrstaGorivaNaziv.indexOf(spinnerVrstaGoriva.getSelectedItem())) + "&position=velenje&format=json"
+
+                spinnerDistributer.getSelectedItem();
+
+                //Toast.makeText(MainActivity.this, spinnerDistributer.getSelectedItem() + " - " + spinnerVrstaGoriva.getSelectedItem(), Toast.LENGTH_LONG).show();
+                String URL_GET;
+                //ce je vrstaGorivaID prazna, potem ne sme dodati 'price_', drugace GET vrne napako
+                if (Seja.arrayListVrstaGorivaID.get(Seja.arrayListVrstaGorivaNaziv.indexOf(spinnerVrstaGoriva.getSelectedItem())).length() == 0)
+                {
+                    URL_GET = "https://goriva.si/api/v1/search/?franchise=" +
+                            Seja.arrayListDistributerID.get(Seja.arrayListDistributerNaziv.indexOf(spinnerDistributer.getSelectedItem())) +
+                            "&o=" + Seja.arrayListVrstaGorivaID.get(Seja.arrayListVrstaGorivaNaziv.indexOf(spinnerVrstaGoriva.getSelectedItem())) +
+                            "&position=velenje&format=json";
+                }
+                else
+                {
+                    URL_GET = "https://goriva.si/api/v1/search/?franchise=" +
+                            Seja.arrayListDistributerID.get(Seja.arrayListDistributerNaziv.indexOf(spinnerDistributer.getSelectedItem())) +
+                            "&o=price_" + Seja.arrayListVrstaGorivaID.get(Seja.arrayListVrstaGorivaNaziv.indexOf(spinnerVrstaGoriva.getSelectedItem())) +
+                            "&position=velenje&format=json";
+                }
+
+
+                Toast.makeText(MainActivity.this, URL_GET, Toast.LENGTH_LONG).show();
+
+               // URL_GET = "";
+
+                //JsonArrayRequest array_request = new JsonArrayRequest(Request.Method.GET, URL_GET, null, new Response.Listener<JSONArray>() {
+                JsonObjectRequest object_request = new JsonObjectRequest(Request.Method.GET, URL_GET, null, new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONArray response) {
+                    public void onResponse(JSONObject response) {
                         Log.i("Volley onResponse", "URL="+URL_GET);
                         //Toast.makeText(MainActivity.this, response.toString(), Toast.LENGTH_LONG);
                         SPLETNE_ZAHTEVE_STEVEC--; //zahteva zaključena, števec se dekrementira
@@ -316,7 +363,9 @@ public class MainActivity extends Activity {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("Volley onErrorResponse", "NAPAKA: " + error.getMessage());
+
+                        largeLog("Volley", error.getMessage());
+
                         Toast.makeText(MainActivity.this, "Napaka pri povezavi s strežnikom. Poskusite pozneje", Toast.LENGTH_LONG).show();
                         SPLETNE_ZAHTEVE_STEVEC--; //zahteva zaključena, števec se dekrementira
                         SPLETNE_ZAHTEVE_NAPAKA = true;
@@ -330,9 +379,9 @@ public class MainActivity extends Activity {
                 //and parsing responses. Requests do the parsing of raw responses and Volley takes care of dispatching the
                 // parsed response back to the main thread for delivery.
 
-                array_request.setTag(R.id.buttonIsci); //označimo request, da se lahko kasneje prekliče, če je potrebno
+                object_request.setTag(R.id.buttonIsci); //označimo request, da se lahko kasneje prekliče, če je potrebno
                 //request, ki se doda v queue
-                queue.add(array_request); //dodajanje requesta v queue
+                queue.add(object_request); //dodajanje requesta v queue
                 SPLETNE_ZAHTEVE_STEVEC++;
 
                 /*
@@ -453,11 +502,11 @@ public class MainActivity extends Activity {
 
                 if (spinnerViewID == R.id.spinnerDistributer)
                 {
-                    napolniSpinnerSPodatki(spinnerViewID, Seja.arrayListDistributer);
+                    napolniSpinnerSPodatki(spinnerViewID, Seja.arrayListDistributerNaziv);
                 }
                 else if (spinnerViewID == R.id.spinnerVrstaGoriva)
                 {
-                    napolniSpinnerSPodatki(spinnerViewID, Seja.arrayListVrstaGoriva);
+                    napolniSpinnerSPodatki(spinnerViewID, Seja.arrayListVrstaGorivaNaziv);
                 }
 
                 //če se še izvajajo spletne zahteve ostane UI zaklenjen
@@ -530,14 +579,15 @@ public class MainActivity extends Activity {
             if (action == R.id.spinnerDistributer)
             {
                 arrList.get(0).add(0, "Vsi distributerji"); //doda možnost "izberi vse" na prvo mesto
-                Seja.arrayListDistributer = arrList.get(0); //index 0 name //doda seznam distributerjev v 'sejo', da se ob ponovni vrnitvi k aplikaciji ni potrebno se enkrat klicat GET funkcije s spleta
+                Seja.arrayListDistributerNaziv = arrList.get(0); //index 0 name //doda seznam distributerjev v 'sejo', da se ob ponovni vrnitvi k aplikaciji ni potrebno se enkrat klicat GET funkcije s spleta
                 Seja.arrayListDistributerID = arrList.get(1);
             }
             else if (action == R.id.spinnerVrstaGoriva)
             {
                 arrList.get(0).add(0, "Vsa vrsta goriv");
-                Seja.arrayListVrstaGoriva = arrList.get(0);
+                Seja.arrayListVrstaGorivaNaziv = arrList.get(0);
                 Seja.arrayListVrstaGorivaID = arrList.get(1);
+
             }
 
         }
@@ -553,12 +603,12 @@ public class MainActivity extends Activity {
         // in je v spinnerju samo možnost "Izberi distributerja"
         //Če je arrayListDistributer prazen je index 0 = Izberi distributerja
         //Če arrayListDistributer ni prazen je index 0 = Vsi distributerji
-        if ((spinnerViewID == R.id.spinnerDistributer) && (Seja.spinnerDistributerIzbraniItem >= 0) && (Seja.arrayListDistributer.size() > 0))
+        if ((spinnerViewID == R.id.spinnerDistributer) && (Seja.spinnerDistributerIzbraniItem >= 0) && (Seja.arrayListDistributerNaziv.size() > 0))
         {
             spinner.setAdapter(adapter);
             spinner.setSelection(Seja.spinnerDistributerIzbraniItem);
         }
-        else if ((spinnerViewID == R.id.spinnerVrstaGoriva) && (Seja.spinnerVrstaGorivaIzbraniItem >= 0) && (Seja.arrayListVrstaGoriva.size() > 0))
+        else if ((spinnerViewID == R.id.spinnerVrstaGoriva) && (Seja.spinnerVrstaGorivaIzbraniItem >= 0) && (Seja.arrayListVrstaGorivaNaziv.size() > 0))
         {
             spinner.setAdapter(adapter);
             spinner.setSelection(Seja.spinnerVrstaGorivaIzbraniItem);
@@ -580,11 +630,11 @@ public class MainActivity extends Activity {
                             //doda seznam distributerjev v 'sejo', da se ob ponovni vrnitvi k aplikaciji ni potrebno se enkrat klicat GET funkcije s spleta
                             //V sejo se dodajajo tukaj, ker tukaj se dejansko adapter šele doda v spinner
                             //se je dogajalo, da si obrnil zaslon preden je uporabnik kliknal spinner, in je prvi item se samodejno spremenil iz "Izberi distributerja" v "Vsi distributerji"
-                            Seja.arrayListDistributer = spinnerItemsList;
+                            Seja.arrayListDistributerNaziv = spinnerItemsList;
                         }
                         else if (spinnerViewID == R.id.spinnerVrstaGoriva)
                         {
-                            Seja.arrayListVrstaGoriva = spinnerItemsList;
+                            Seja.arrayListVrstaGorivaNaziv = spinnerItemsList;
                         }
 
                         spinner.setAdapter(adapter);
@@ -731,6 +781,15 @@ public class MainActivity extends Activity {
             list.add((String) adapter.getItem(i));
         }
         return list;
+    }
+
+    public static void largeLog(String tag, String content) {
+        if (content.length() > 4000) {
+            Log.e(tag, content.substring(0, 4000));
+            largeLog(tag, content.substring(4000));
+        } else {
+            Log.e(tag, content);
+        }
     }
 
 }

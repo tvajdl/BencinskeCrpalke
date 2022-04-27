@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
@@ -150,6 +151,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // to make the Navigation drawer icon always appear on the action bar
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Bundle bundle = getIntent().getExtras();
+        String message = bundle.getString("response");
+
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
 
     }
 
