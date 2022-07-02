@@ -16,11 +16,11 @@ public class Seja {
     protected static String buttonOdpriZapriOkvirText = ""; // načeloma je ▼ ali ▲
     protected static boolean SPLETNE_ZAHTEVE_NAPAKA = false; //zastavica, preverja, ali se je zgodila napaka pri branju podatkov iz spletnih zahtev
     protected static String textBoxLokacija = "";
-    protected static ArrayList<String> arrayListDistributerNaziv = new ArrayList<>(); //spinnerDistributer shranjeni nazivi distributerjev
-    protected static ArrayList<String> arrayListDistributerID = new ArrayList<>(); //shranjeni IDji od zgornjih distributerjev, indexi se ujemajo naziv=ID
+    protected static ArrayList<String> arrayListDistributerNaziv = new ArrayList<String>(); //spinnerDistributer shranjeni nazivi distributerjev
+    protected static ArrayList<String> arrayListDistributerID = new ArrayList<String>(); //shranjeni IDji od zgornjih distributerjev, indexi se ujemajo naziv=ID
 
-    protected static ArrayList<String> arrayListVrstaGorivaNaziv = new ArrayList<>(); //podatki iz spinnerja spinnerVrstaGoriva
-    protected static ArrayList<String> arrayListVrstaGorivaID = new ArrayList<>(); //shranjeni IDji od zgornjih vrsta goriv, indexi se ujemajo ime goriva=ID
+    protected static ArrayList<String> arrayListVrstaGorivaNaziv = new ArrayList<String>(); //podatki iz spinnerja spinnerVrstaGoriva
+    protected static ArrayList<String> arrayListVrstaGorivaID = new ArrayList<String>(); //shranjeni IDji od zgornjih vrsta goriv, indexi se ujemajo ime goriva=ID
 
     //alternativa
     protected static HashMap<String, String> hashMapVrstaGoriva = new HashMap<String, String>();
@@ -28,4 +28,6 @@ public class Seja {
 
     protected static int spinnerDistributerIzbraniItem = 0; //izbrana možnost na spinnerDistributer
     protected static int spinnerVrstaGorivaIzbraniItem = 0; //izbrana možnost na spinnerVrstaGoriva
+
+    protected static ArrayList<MenuCardBencinskaCrpalka> menuCardBencinskaCrpalkaArrayList = new ArrayList<>();
 }

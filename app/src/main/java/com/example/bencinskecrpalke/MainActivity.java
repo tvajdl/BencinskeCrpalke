@@ -69,7 +69,6 @@ import java.util.ArrayList;
  * + https://stackoverflow.com/questions/1337424/android-spinner-get-the-selected-item-change-event
  * */
 
-//posebej class samo za GPS???
 
 //public class MainActivity extends AppCompatActivity {
 public class MainActivity extends Activity {
@@ -276,7 +275,7 @@ public class MainActivity extends Activity {
                  * */
 
                 String currentLokacija;
-                if (((TextView)findViewById(R.id.textViewLokacija)).getText() == "")
+                if (((TextView)findViewById(R.id.textViewLokacija)).getText().length() == 0)
                 {
                     currentLokacija = latitude + "," + longitude;
                 }
@@ -305,7 +304,7 @@ public class MainActivity extends Activity {
 
                 //"https://goriva.si/api/v1/search/?franchise=" + Seja.arrayListDistributerID.get(Seja.arrayListDistributerNaziv.indexOf(spinnerDistributer.getSelectedItem())) + "&o=price_" + Seja.arrayListVrstaGorivaID.get(Seja.arrayListVrstaGorivaNaziv.indexOf(spinnerVrstaGoriva.getSelectedItem())) + "&position=velenje&format=json"
 
-                spinnerDistributer.getSelectedItem();
+                spinnerDistributer.getSelectedItem(); //kaj je namen tega?
 
                 //Toast.makeText(MainActivity.this, spinnerDistributer.getSelectedItem() + " - " + spinnerVrstaGoriva.getSelectedItem(), Toast.LENGTH_LONG).show();
                 String URL_GET;
@@ -315,18 +314,20 @@ public class MainActivity extends Activity {
                     URL_GET = "https://goriva.si/api/v1/search/?franchise=" +
                             Seja.arrayListDistributerID.get(Seja.arrayListDistributerNaziv.indexOf(spinnerDistributer.getSelectedItem())) +
                             "&o=" + Seja.arrayListVrstaGorivaID.get(Seja.arrayListVrstaGorivaNaziv.indexOf(spinnerVrstaGoriva.getSelectedItem())) +
-                            "&position=velenje&format=json";
+                            "&position=" + currentLokacija +
+                            "&format=json";
                 }
                 else
                 {
                     URL_GET = "https://goriva.si/api/v1/search/?franchise=" +
                             Seja.arrayListDistributerID.get(Seja.arrayListDistributerNaziv.indexOf(spinnerDistributer.getSelectedItem())) +
                             "&o=price_" + Seja.arrayListVrstaGorivaID.get(Seja.arrayListVrstaGorivaNaziv.indexOf(spinnerVrstaGoriva.getSelectedItem())) +
-                            "&position=velenje&format=json";
+                            "&position=" + currentLokacija +
+                            "&format=json";
                 }
 
 
-                Toast.makeText(MainActivity.this, URL_GET, Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, URL_GET, Toast.LENGTH_LONG).show();
 
                // URL_GET = "";
 
@@ -338,26 +339,10 @@ public class MainActivity extends Activity {
                         //Toast.makeText(MainActivity.this, response.toString(), Toast.LENGTH_LONG);
                         SPLETNE_ZAHTEVE_STEVEC--; //zahteva zaključena, števec se dekrementira
 
-                        //če se še izvajajo spletne zahteve ostane UI zaklenjen
-                        //če pride do napake pri pridobivanju spletne zahteve ostane UI zaklenjen
-                        if (!seIzvajajoSpletneZahteve() && !SPLETNE_ZAHTEVE_NAPAKA)
-                        {
-                            //če je aplikacija že prej bila aktivna se samo UI po polnjenju s podatki nazaj omogoči, drugače se še prej splash screen skrije
-                            if (APLIKACIJA_ZE_AKTIVNA)
-                                omogociUI(true);
-                            else
-                                skrijSplashScreen();
-                        }
-
                         Intent intent = new Intent(MainActivity.this, MapsActivity.class);
                         intent.putExtra("response", response.toString()); //pošlje rezultat v naslednji activity
-                        //nazaj ga dobiš JSONArray jsonArr = new JSONArray(string);
                         //V MapsActivity v OnCreate dobiš string ven
 
-                        /*
-                        * Bundle bundle = getIntent().getExtras();
-                            String message = bundle.getString("message");
-                        * */
                         startActivity(intent);
                     }
                 }, new Response.ErrorListener() {
@@ -597,7 +582,7 @@ public class MainActivity extends Activity {
     private void napolniSpinnerSPodatki(int spinnerViewID, ArrayList<String> spinnerItemsList)
     {
         Spinner spinner = findViewById(spinnerViewID); //izbere spinner za napolnit
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, spinnerItemsList); //ustvari adapter, tip dropdowna in ga napolni s podatki
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, spinnerItemsList); //ustvari adapter, tip dropdowna in ga napolni s podatki
 
         //Če je arrayListDistributer prazen pomeni, da se še ni izvajala poizvedba za distributerji
         // in je v spinnerju samo možnost "Izberi distributerja"
@@ -775,7 +760,7 @@ public class MainActivity extends Activity {
     {
         SpinnerAdapter adapter = s.getAdapter();
         int n = adapter.getCount();
-        ArrayList<String> list = new ArrayList<>(n);
+        ArrayList<String> list = new ArrayList<String>(n);
         for (int i = 0; i < n; i++)
         {
             list.add((String) adapter.getItem(i));
@@ -783,6 +768,7 @@ public class MainActivity extends Activity {
         return list;
     }
 
+    //kadar je error string prevelik za log
     public static void largeLog(String tag, String content) {
         if (content.length() > 4000) {
             Log.e(tag, content.substring(0, 4000));

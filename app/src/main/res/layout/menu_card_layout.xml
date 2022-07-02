@@ -6,6 +6,9 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
     >
 
     <LinearLayout
@@ -42,8 +45,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:gravity="center"
                 android:text="naziv"
-                 />
+                android:textSize="20dp"
+                android:fontFamily="sans-serif-light"
+                android:textStyle="bold"
+                />
 
             <TextView
                 android:id="@+id/textviewNaslov"
@@ -52,9 +59,46 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/_4sdp"
                 android:layout_marginBottom="@dimen/_6sdp"
+                android:gravity="center"
+                android:fontFamily="sans-serif-thin"
                 android:text="naslov"
+                android:textSize="15dp"
+                android:textStyle="bold"
 
                  />
+
+            <TextView
+                android:id="@+id/textViewOddaljenost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:text="Oddaljenost"
+                android:fontFamily="sans-serif-light"
+                />
+
+            <TextView
+                android:id="@+id/textviewOdpiralniCas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_6sdp"
+                android:paddingBottom="10dp"
+                android:gravity="center"
+                android:fontFamily="sans-serif-thin"
+                android:text="odpiralni cas"
+                android:textStyle="bold"
+                />
+
+            <Button
+                android:id="@+id/buttonNavigacija"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Prikaži pot"
+
+                style="?attr/materialButtonOutlinedStyle"
+                />
 
             <org.apmem.tools.layouts.FlowLayout
                 android:id="@+id/flowLayoutGorivo"
@@ -62,16 +106,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
+                android:paddingBottom="10dp"
                 >
+
 
 
             </org.apmem.tools.layouts.FlowLayout>
 
         </LinearLayout>
     </LinearLayout>
-    <!-- Ločitvena crta na koncu -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"/>
+
 </com.google.android.material.card.MaterialCardView>
